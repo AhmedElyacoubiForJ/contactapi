@@ -16,6 +16,7 @@ import org.hibernate.annotations.UuidGenerator;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+// attribute w. null values will be not returned
 @JsonInclude(JsonInclude.Include.NON_DEFAULT)
 @Table(name = "contacts")
 public class Contact {
