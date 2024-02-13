@@ -40,9 +40,13 @@ public class ContactService {
     }
 
     public Contact getContact(String id) {
-        return contactRepository
-                .findById(id)
-                .orElseThrow(() -> new RuntimeException("Contact not found"));
+        return contactRepository.findById(id)
+                .orElseThrow(
+                        () -> {
+                            log.error("Contact with id {} not found", id);
+                            return new RuntimeException("Contact not found");
+                        }
+                );
     }
 
     public Contact createContact(Contact contact) {
@@ -55,6 +59,7 @@ public class ContactService {
 
     public String uploadPhoto(String contactId, MultipartFile file) {
         log.info("Saving picture for user ID: {}", contactId);
+
         Contact contact = getContact(contactId);
         String photoUrl = photoFunction.apply(contactId, file);
         contact.setPhotoUrl(photoUrl);
@@ -64,13 +69,13 @@ public class ContactService {
     }
 
     // looking for the file extension
-    private final Function<String, String> fileExtension = fileName -> Optional.of(fileName)
+    private final Function<String, String> getFileExtension = fileName -> Optional.of(fileName)
             .filter(name -> name.contains("."))
             .map(name -> "." + name.substring(fileName.lastIndexOf(".") + 1))
             .orElse("png");
 
     private final BiFunction<String, MultipartFile, String> photoFunction = (contactId, image) -> {
-        String fileName = contactId + fileExtension.apply(image.getOriginalFilename());
+        String fileName = contactId + getFileExtension.apply(image.getOriginalFilename());
         try {
             Path fileStorageLocation = Paths.get(PHOTO_DIRECTORY).toAbsolutePath().normalize();
 
@@ -92,5 +97,4 @@ public class ContactService {
             throw new RuntimeException("Unable to save image");
         }
     };
-
 }

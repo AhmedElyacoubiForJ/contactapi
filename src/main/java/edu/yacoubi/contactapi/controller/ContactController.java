@@ -24,15 +24,20 @@ public class ContactController {
     private final ContactService contactService;
 
     @GetMapping
-    public ResponseEntity<Page<Contact>> getContacts(@RequestParam(value = "page", defaultValue = "0") int page,
-                                                     @RequestParam(value = "size", defaultValue = "10") int size) {
-        return ResponseEntity.ok().body(contactService.getAllContacts(page, size));
+    public ResponseEntity<Page<Contact>> getContacts(
+            @RequestParam(value = "page", defaultValue = "0") int page,
+            @RequestParam(value = "size", defaultValue = "10") int size) {
+
+        return ResponseEntity.ok().body(
+                contactService.getAllContacts(page, size)
+        );
     }
 
     @PostMapping
     public ResponseEntity<Contact> createContact(@RequestBody Contact contact) {
         //return ResponseEntity.ok().body(contactService.createContact(contact));
-        return ResponseEntity.created(URI.create("/contacts/userID")).body(contactService.createContact(contact));
+        return ResponseEntity.created(URI.create("/contacts/userID"))
+                .body(contactService.createContact(contact));
     }
 
     @GetMapping("/{id}")
@@ -47,7 +52,10 @@ public class ContactController {
         return ResponseEntity.ok().body(contactService.uploadPhoto(id, file));
     }
 
-    @GetMapping(path = "/image/{filename}", produces = { IMAGE_PNG_VALUE, IMAGE_JPEG_VALUE })
+    @GetMapping(
+            path = "/image/{filename}",
+            produces = { IMAGE_PNG_VALUE, IMAGE_JPEG_VALUE }
+    )
     public byte[] getPhoto(@PathVariable("filename") String filename) throws IOException {
         return Files.readAllBytes(Paths.get(PHOTO_DIRECTORY + filename));
     }
