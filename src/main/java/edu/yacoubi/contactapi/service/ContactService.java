@@ -53,7 +53,7 @@ public class ContactService {
         contactRepository.delete(contact);
     }
 
-    public  String uploadPhoto(String id, MultipartFile file) {
+    public String uploadPhoto(String id, MultipartFile file) {
         log.info("Saving picture for user ID: {}", id);
         Contact contact = getContact(id);
         String photoUrl = photoFunction.apply(id, file);
@@ -65,20 +65,21 @@ public class ContactService {
 
     // Function for getting file extension
    /* private Function<String, String> getFileExtension = fileName -> "." + fileName
-            .substring(fileName.lastIndexOf(".") + 1);*/
+            .substring("." + fileName.lastIndexOf(".") + 1);*/
 
-    private final Function<String, String> fileExtension = fileName -> Optional.of(fileName)
-            .filter(name -> name.contains("."))
-            .map(name -> "." + name.substring(name.lastIndexOf(".") + 1))
-            .orElse(".png");
+    private final Function<String, String> fileExtension = fileName ->
+            Optional.of(fileName)
+                    .filter(name -> name.contains("."))
+                    .map(name -> "." + name.substring(name.lastIndexOf(".") + 1))
+                    .orElse(".png");
 
 
     private final BiFunction<String, MultipartFile, String> photoFunction = (id, image) -> {
         String fileName = id + fileExtension.apply(image.getOriginalFilename());
         try {
             // get the file storage location
-            Path fileStorageLocation = Paths.get(PHOTO_DIRECTORY ).toAbsolutePath().normalize();
-            if(!Files.exists(fileStorageLocation)) {
+            Path fileStorageLocation = Paths.get(PHOTO_DIRECTORY).toAbsolutePath().normalize();
+            if (!Files.exists(fileStorageLocation)) {
                 Files.createDirectories(fileStorageLocation);
             }
 
